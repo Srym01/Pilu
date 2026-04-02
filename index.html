@@ -26,11 +26,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     80% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 2vw; text-shadow: 0 0 40px rgba(201,168,76,0.8); }
     100% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 2vw; text-shadow: 0 0 20px rgba(201,168,76,0.5); }
 }
-.enter-btn{position:relative;overflow:hidden;margin-top:40px;padding:14px 48px;font-family:'Space Grotesk',sans-serif;font-size:3.5vw;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;border-radius:60px;cursor:pointer;box-shadow:0 0 40px var(--gg);opacity:0;transform:translateY(20px);animation:fade-up 0.5s ease forwards 3s;}
-@keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
-.enter-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-100%);animation:sh 2.5s infinite 1s}
-@keyframes sh{to{transform:translateX(200%)}}
-.enter-btn:active{transform:scale(.95)}
 
 #hud{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;pointer-events:none}
 .hl{display:flex;gap:7px;pointer-events:auto}
@@ -111,7 +106,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 #lbi,#lbv{max-width:100%;max-height:80vh;border-radius:10px;display:none;box-shadow:0 0 60px rgba(0,0,0,.9)}
 #lbc{position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid var(--bd);backdrop-filter:blur(12px);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-/* RECENSIONI E NEWSLETTER */
+/* FORMS E SEZIONI TESTO */
 .rev-wrap{padding: 0 22px;}
 .rev-form { background: var(--d2); padding: 20px; border-radius: var(--r); border: 1px solid var(--bd); margin-bottom: 20px;}
 .rev-form input, .rev-form select, .rev-form textarea { width: 100%; background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-family: inherit; font-size: 15px;}
@@ -132,6 +127,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .cbs{font-size:3vw;color:var(--mu);margin-top:2px}
 .wa .cbi{background:rgba(37,211,102,.1);color:#25D366}
 .ig .cbi{background:rgba(225,48,108,.1);color:#E1306C}
+.sc .cbi{background:rgba(255,85,0,.1);color:#FF5500}
+.lt .cbi{background:rgba(67,230,96,.1);color:#43E660}
 
 footer{padding:60px 22px 120px;border-top:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;gap:12px}
 .fl{font-family:'Bebas Neue',sans-serif;font-size:20vw;letter-spacing:4vw;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.06);line-height:1}
@@ -144,7 +141,6 @@ footer{padding:60px 22px 120px;border-top:1px solid var(--bd);display:flex;flex-
 
 <div id="splash">
     <div class="sp-logo">PIERLUIGI BERARDI</div>
-    <button class="enter-btn" id="sb">Entra nel ritmo</button>
 </div>
 
 <div id="hud">
@@ -163,7 +159,7 @@ footer{padding:60px 22px 120px;border-top:1px solid var(--bd);display:flex;flex-
 <audio id="bg-audio" loop preload="auto"><source src="audio.mp3" type="audio/mpeg"></audio>
 
 <div id="player">
-    <button id="ppb"><i class="fas fa-pause"></i></button>
+    <button id="ppb"><i class="fas fa-play"></i></button>
     <div class="viz" id="viz">
         <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
     </div>
@@ -226,11 +222,29 @@ footer{padding:60px 22px 120px;border-top:1px solid var(--bd);display:flex;flex-
     </div>
 </section>
 
+<section class="section" id="booking">
+    <div class="sec-hd reveal"><span class="sec-n">05</span><h2 class="sec-t">Booking</h2></div>
+    <div class="rev-wrap reveal">
+        <div class="rev-form" style="border-color: var(--gold);">
+            <h3 style="color: var(--gold); margin-bottom: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px;">Vuoi che suoni alla tua festa?</h3>
+            <p style="color: var(--mu); font-size: 14px; margin-bottom: 20px;">Compila i campi per richiedere informazioni o prenotare una data per il tuo evento.</p>
+            <input type="text" id="book-name" placeholder="Il tuo Nome o Azienda">
+            <input type="text" id="book-contact" placeholder="Email o Telefono">
+            <input type="date" id="book-date" style="color-scheme: dark; color: #aaa;">
+            <textarea id="book-details" placeholder="Dettagli evento (Tipo di festa, Location, ecc...)" rows="3"></textarea>
+            <button id="btn-booking">Richiedi Prenotazione</button>
+            <div id="book-status" style="margin-top: 15px; color: #43E660; font-weight: bold; display: none;">Richiesta inviata con successo! Ti contatterò presto. 🎧</div>
+        </div>
+    </div>
+</section>
+
 <section class="section" id="links">
-    <div class="sec-hd reveal"><span class="sec-n">05</span><h2 class="sec-t">Connect</h2></div>
+    <div class="sec-hd reveal"><span class="sec-n">06</span><h2 class="sec-t">Connect</h2></div>
     <div id="lw" class="reveal">
-        <a href="https://wa.me/393337597075" class="cb wa"><div class="cbi"><i class="fab fa-whatsapp"></i></div><div class="cbt"><div class="cbl">WhatsApp</div><div class="cbs">Booking</div></div></a>
-        <a href="https://www.instagram.com/pierluigi_berardi/" class="cb ig"><div class="cbi"><i class="fab fa-instagram"></i></div><div class="cbt"><div class="cbl">Instagram</div><div class="cbs">@pierluigi_berardi</div></div></a>
+        <a href="https://wa.me/393337597075" class="cb wa"><div class="cbi"><i class="fab fa-whatsapp"></i></div><div class="cbt"><div class="cbl">WhatsApp</div><div class="cbs">Scrivimi per info</div></div></a>
+        <a href="https://www.instagram.com/pierluigi_berardi/" class="cb ig"><div class="cbi"><i class="fab fa-instagram"></i></div><div class="cbt"><div class="cbl">Instagram</div><div class="cbs">Seguimi per le novità</div></div></a>
+        <a href="https://soundcloud.com/pierluigi-berardi" class="cb sc"><div class="cbi"><i class="fab fa-soundcloud"></i></div><div class="cbt"><div class="cbl">SoundCloud</div><div class="cbs">Ascolta i miei mix</div></div></a>
+        <a href="https://linktr.ee/PierluigiBerardi" class="cb lt"><div class="cbi"><i class="fas fa-link"></i></div><div class="cbt"><div class="cbl">Linktree</div><div class="cbs">Tutti i miei link utili</div></div></a>
     </div>
 </section>
 
@@ -255,7 +269,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// GESTIONE STATISTICHE REAL-TIME (Views, Likes, Tempo sul sito)
+// GESTIONE STATISTICHE REAL-TIME
 const startTime = Date.now();
 const statsRef = doc(db, "stats", "global");
 
@@ -263,21 +277,18 @@ async function initStats() {
     try {
         await updateDoc(statsRef, { views: increment(1) });
     } catch(e) {
-        await setDoc(statsRef, { views: 1, likes: 0, totalTimeSec: 0 }); // Crea il doc se non esiste
+        await setDoc(statsRef, { views: 1, likes: 0, totalTimeSec: 0 });
     }
     const snap = await getDoc(statsRef);
     if(snap.exists()){
         document.getElementById('view-counter').innerText = snap.data().views || 0;
         document.getElementById('like-text').innerText = snap.data().likes || 0;
     }
-    
-    // Controlla se l'utente ha già messo like in passato
     if(localStorage.getItem('pilu_liked') === 'true') { 
         document.getElementById('like-btn').classList.add('liked'); 
     }
 }
 
-// Salva tempo di permanenza all'uscita dal sito
 window.addEventListener('beforeunload', () => {
     const timeSpent = Math.floor((Date.now() - startTime) / 1000);
     if (timeSpent > 0) {
@@ -285,14 +296,11 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
-// GESTIONE MI PIACE SU FIREBASE
+// GESTIONE MI PIACE
 document.getElementById('like-btn').addEventListener('click', async function() {
-    if(localStorage.getItem('pilu_liked') === 'true') return; // Evita spam
-    
+    if(localStorage.getItem('pilu_liked') === 'true') return; 
     this.classList.add('liked');
     localStorage.setItem('pilu_liked', 'true');
-    
-    // Aggiorna Firebase
     await updateDoc(statsRef, { likes: increment(1) });
     const snap = await getDoc(statsRef);
     document.getElementById('like-text').innerText = snap.data().likes;
@@ -312,11 +320,38 @@ document.getElementById('btn-subscribe').addEventListener('click', async () => {
     document.getElementById('btn-subscribe').innerText = "Avvisami per le nuove date";
     document.getElementById('news-status').style.display = 'block';
     document.getElementById('news-contact').value = '';
-    
     setTimeout(() => { document.getElementById('news-status').style.display = 'none'; }, 5000);
 });
 
-// GESTIONE CONTENUTI ESISTENTI (Eventi, Gallery, Recensioni)
+// GESTIONE BOOKING (NUOVA)
+document.getElementById('btn-booking').addEventListener('click', async () => {
+    const name = document.getElementById('book-name').value.trim();
+    const contact = document.getElementById('book-contact').value.trim();
+    const date = document.getElementById('book-date').value;
+    const details = document.getElementById('book-details').value.trim();
+
+    if(!name || !contact) return alert("Per favore, inserisci almeno il tuo nome e un contatto (Email o Telefono).");
+
+    document.getElementById('btn-booking').innerText = "Invio in corso...";
+    await addDoc(collection(db, "booking"), {
+        nome: name,
+        contatto: contact,
+        dataEvento: date,
+        dettagli: details,
+        timestamp: serverTimestamp()
+    });
+
+    document.getElementById('btn-booking').innerText = "Richiedi Prenotazione";
+    document.getElementById('book-status').style.display = 'block';
+    setTimeout(() => { document.getElementById('book-status').style.display = 'none'; }, 6000);
+    
+    document.getElementById('book-name').value = '';
+    document.getElementById('book-contact').value = '';
+    document.getElementById('book-date').value = '';
+    document.getElementById('book-details').value = '';
+});
+
+// CARICAMENTO CONTENUTI
 async function caricaContenuti() {
     try {
         const snapEv = await getDocs(query(collection(db, "eventi"), orderBy("date", "asc")));
@@ -382,19 +417,27 @@ function buildGallery(items) {
     });
 }
 
-// UI SITO E AUDIO
+// UI SITO, AUDIO E START AUTOMATICO
 const splash = document.getElementById('splash'), audio = document.getElementById('bg-audio'), hv = document.getElementById('hv'), ppb = document.getElementById('ppb'), viz = document.getElementById('viz');
 
-// Avvio Sito al click dell'Entra
-document.getElementById('sb').addEventListener('click', () => {
+// Avvio automatico dopo 3 secondi (Effetto WOW)
+setTimeout(() => {
     splash.classList.add('hide'); 
     audio.volume = .75; 
-    audio.play().then(() => viz.classList.add('on')).catch(()=>{}); 
+    // Prova ad avviare l'audio, ma ignora l'errore se il browser lo blocca prima dell'interazione
+    audio.play().then(() => {
+        viz.classList.add('on');
+        ppb.innerHTML = '<i class="fas fa-pause"></i>';
+    }).catch(() => {
+        // Se bloccato, aspetta che l'utente clicchi play
+        ppb.innerHTML = '<i class="fas fa-play"></i>';
+    }); 
     hv.play().catch(()=>{});
-    initStats(); // Carica views vere da Firebase
+    initStats();
     caricaContenuti();
-});
+}, 3000);
 
+// Controllo manuale Play/Pausa
 ppb.addEventListener('click', () => {
     if(audio.paused) { audio.play(); ppb.innerHTML = '<i class="fas fa-pause"></i>'; viz.classList.add('on'); }
     else { audio.pause(); ppb.innerHTML = '<i class="fas fa-play"></i>'; viz.classList.remove('on'); }
