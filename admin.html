@@ -9,14 +9,15 @@
     <style>
         :root { --gold: #C9A84C; --gl: #E8C97A; --bg: #060606; --box: #111; --border: rgba(255,255,255,0.08); --text: #F0EDE8; --r: 14px; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 15px; -webkit-font-smoothing: antialiased; }
 
-        .box { background: var(--box); padding: 28px; border-radius: var(--r); border: 1px solid var(--border); width: 100%; max-width: 540px; box-shadow: 0 10px 40px rgba(0,0,0,.6); margin-bottom: 20px; }
+        .box { background: var(--box); padding: 25px 20px; border-radius: var(--r); border: 1px solid var(--border); width: 100%; max-width: 540px; box-shadow: 0 10px 40px rgba(0,0,0,.6); margin-bottom: 20px; }
         .hidden { display: none !important; }
 
         h1 { color: var(--gold); margin-top: 0; letter-spacing: 3px; text-transform: uppercase; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
-        h2 { color: #fff; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        h2 i { color: var(--gold); }
+        h3 { color: #fff; font-size: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; margin-top: 20px; display: flex; align-items: center; gap: 8px; }
+        h3 i { color: var(--gold); }
+        h3:first-child { margin-top: 0; }
 
         input, select, button, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-family: inherit; box-sizing: border-box; font-size: 14px; transition: border-color .2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
@@ -30,28 +31,39 @@
         .btn-del { background: linear-gradient(135deg, #ff3b30, #cc2d25); color: white; margin-bottom: 0; }
         .btn-update { background: linear-gradient(135deg, #43E660, #38c950); color: #000; margin-bottom: 0; }
 
-        .analytics-panel { border-color: rgba(201,168,76,.2); background: #0a0a0a; position: relative; overflow: hidden; }
-        .analytics-panel::before { content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+        /* Stili per le schede apribili (Accordion) */
+        .acc-wrap { background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+        .acc-head { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #141414; user-select: none; transition: background .2s; }
+        .acc-head:hover { background: #1a1a1a; }
+        .acc-head h2 { border: none; padding: 0; margin: 0; font-size: 16px; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .acc-head h2 i { color: var(--gold); font-size: 18px; width: 24px; text-align: center; }
+        .acc-content { padding: 20px 15px; display: none; border-top: 1px solid var(--border); background: #060606; }
+        .acc-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .chevron { transition: transform 0.3s; color: #888; font-size: 14px; }
+        .acc-head.open .chevron { transform: rotate(180deg); color: var(--gold); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Griglia Statistiche */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .stat-box { background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 10px; text-align: center; }
         .stat-num { font-size: 28px; font-weight: bold; color: var(--gold); margin-bottom: 4px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
         .stat-label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 1.5px; }
 
-        .news-list { max-height: 220px; overflow-y: auto; background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
+        .news-list { max-height: 250px; overflow-y: auto; background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
         .news-item { padding: 10px; border-bottom: 1px solid #181818; font-size: 13px; display: flex; align-items: center; gap: 10px; color: #bbb; justify-content: space-between; }
         .news-item:last-child { border-bottom: none; }
 
-        .status-msg { margin-top: 10px; color: #43E660; font-size: 13px; font-weight: 600; }
+        .status-msg { margin-top: 10px; color: #43E660; font-size: 13px; font-weight: 600; text-align: center; }
         .status-msg.error { color: #ff3b30; }
 
         .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--gold); text-decoration: none; font-size: 13px; margin-bottom: 16px; opacity: .7; transition: opacity .2s; }
         .back-link:hover { opacity: 1; }
 
-        /* Progress bar */
         .upload-progress { width: 100%; height: 4px; background: #222; border-radius: 2px; margin-bottom: 12px; overflow: hidden; display: none; }
         .upload-progress .bar { height: 100%; background: linear-gradient(90deg, var(--gold), #43E660); border-radius: 2px; transition: width .3s; width: 0; }
         
-        .mail-composer { background: #161616; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #222; }
+        .mail-composer { background: #111; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #222; }
         .mail-composer label { font-size: 12px; color: #aaa; margin-bottom: 4px; display: block; }
     </style>
 </head>
@@ -67,71 +79,104 @@
     <div id="login-error" style="color:#ff3b30;margin-top:10px;display:none;font-size:13px;text-align:center">Password errata. Riprova.</div>
 </div>
 
-<div id="admin-box" class="box hidden">
-    <h1><i class="fas fa-crown" style="margin-right: 6px;"></i> Pannello DJ Pilu</h1>
-    <button id="btn-logout" style="background:#222;color:#aaa;margin:15px 0 25px;font-size:12px">Esci dal Pannello</button>
-
-    <div class="box analytics-panel" style="padding:22px;width:auto;max-width:none;margin:0 -8px 28px -8px">
-        <h2><i class="fas fa-chart-line"></i> Statistiche</h2>
-        <div class="stat-grid">
-            <div class="stat-box">
-                <div class="stat-num" id="stat-views">0</div>
-                <div class="stat-label"><i class="fas fa-eye"></i> Visite Totali</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-num" id="stat-likes" style="color:#ff5050">0</div>
-                <div class="stat-label"><i class="fas fa-heart"></i> Mi Piace</div>
-            </div>
-        </div>
-
-        <div class="stat-box" style="margin-bottom:18px;border-color:rgba(201,168,76,.2)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <span class="stat-label" style="color:var(--gold)"><i class="fas fa-clock"></i> Tempo di Permanenza</span>
-                <select id="day-selector" style="width:auto;padding:5px 8px;margin:0;background:#111;border:1px solid rgba(201,168,76,.3);font-size:12px;border-radius:6px"></select>
-            </div>
-            <div class="stat-num" id="stat-time" style="color:#43E660;font-size:24px">0h 0m</div>
-        </div>
-
-        <h2><i class="fas fa-bell"></i> Iscritti Newsletter</h2>
-        <div id="news-container" class="news-list"><div style="text-align:center;padding:20px;color:#555">Caricamento...</div></div>
-        
-        <div class="mail-composer">
-            <h3 style="font-size:14px; margin-bottom:10px; color:var(--gold);"><i class="fas fa-envelope"></i> Invia Aggiornamento Iscritti</h3>
-            <label>Oggetto Email:</label>
-            <input type="text" id="mail-subject" value="Nuovo Evento - DJ Pilu" style="padding:8px;">
-            <label>Testo Email:</label>
-            <textarea id="mail-body" rows="4" style="padding:8px;">Ciao! Abbiamo appena pubblicato i dettagli del prossimo evento sul sito. Corri a vedere la nuova locandina e prenota il tuo tavolo! 
-Vai su: https://iltuositodjpilu.it</textarea>
-            <button id="btn-send-mail" style="font-size:12px; padding:10px;"><i class="fas fa-paper-plane"></i> Prepara Email (BCC)</button>
-            <div style="font-size:11px; color:#888; margin-top:8px; text-align:center;">L'email si aprirà nel tuo programma di posta. Potrai scegliere l'indirizzo mittente ("Da:") direttamente lì.</div>
-        </div>
-
-        <h2 style="margin-top:25px"><i class="fas fa-calendar-check"></i> Prenotazioni Ricevute</h2>
-        <div id="booking-container" class="news-list"><div style="text-align:center;padding:20px;color:#555">Caricamento...</div></div>
+<div id="admin-box" class="box hidden" style="padding: 20px 10px; border: none; background: transparent; box-shadow: none;">
+    <h1 style="margin-bottom: 5px;"><i class="fas fa-crown" style="margin-right: 6px;"></i> Pannello DJ Pilu</h1>
+    <div style="text-align: center; margin-bottom: 25px;">
+        <button id="btn-logout" style="background:#222;color:#aaa;font-size:11px;padding:8px 16px;width:auto;border-radius:20px;"><i class="fas fa-sign-out-alt"></i> Esci dal Pannello</button>
     </div>
 
-    <h2><i class="fas fa-calendar-alt"></i> Aggiungi Locandina</h2>
-    <input type="file" id="ev-file" accept="image/*">
-    <div class="upload-progress" id="ev-progress"><div class="bar"></div></div>
-    <input type="datetime-local" id="ev-date" style="color-scheme:dark">
-    <button id="btn-add-ev">Carica Evento</button>
-    <div id="upload-status-ev" class="status-msg"></div>
-    <div id="events-container" style="margin-top:18px"></div>
+    <div class="acc-wrap">
+        <div class="acc-head">
+            <h2><i class="fas fa-chart-pie"></i> Dashboard & Contatti</h2>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="acc-content">
+            <h3><i class="fas fa-chart-line"></i> Statistiche Visite</h3>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-num" id="stat-views">0</div>
+                    <div class="stat-label"><i class="fas fa-eye"></i> Visite Totali</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="stat-likes" style="color:#ff5050">0</div>
+                    <div class="stat-label"><i class="fas fa-heart"></i> Mi Piace</div>
+                </div>
+            </div>
+            <div class="stat-box" style="margin-bottom:25px;border-color:rgba(201,168,76,.2)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                    <span class="stat-label" style="color:var(--gold)"><i class="fas fa-clock"></i> Tempo Medio</span>
+                    <select id="day-selector" style="width:auto;padding:5px 8px;margin:0;background:#111;border:1px solid rgba(201,168,76,.3);font-size:12px;border-radius:6px"></select>
+                </div>
+                <div class="stat-num" id="stat-time" style="color:#43E660;font-size:24px">0h 0m</div>
+            </div>
 
-    <h2 style="margin-top:35px"><i class="fas fa-camera"></i> Aggiungi a Vibes (Gallery)</h2>
-    <select id="gal-type">
-        <option value="image">Immagine</option>
-        <option value="video">Video (MP4)</option>
-    </select>
-    <input type="file" id="gal-file" accept="image/*,video/mp4">
-    <div class="upload-progress" id="gal-progress"><div class="bar"></div></div>
-    <input type="number" id="gal-order" placeholder="Ordine (es. 1, 2, 3...)" value="1" min="1">
-    <button id="btn-add-gal">Carica Media</button>
-    <div id="upload-status-gal" class="status-msg"></div>
-    <div id="gallery-container" style="margin-top:18px"></div>
+            <h3><i class="fas fa-bell"></i> Iscritti Newsletter</h3>
+            <div id="news-container" class="news-list"><div style="text-align:center;padding:20px;color:#555">Caricamento...</div></div>
+            
+            <div class="mail-composer">
+                <h3 style="font-size:14px; margin-bottom:10px; color:var(--gold); border:none;"><i class="fas fa-paper-plane"></i> Invia Aggiornamento Email</h3>
+                <label>Oggetto Email:</label>
+                <input type="text" id="mail-subject" value="Nuovo Evento - DJ Pilu" style="padding:8px;">
+                <label>Testo Email:</label>
+                <textarea id="mail-body" rows="4" style="padding:8px;">Ciao! Abbiamo appena pubblicato i dettagli del prossimo evento sul sito. Corri a vedere la nuova locandina e prenota il tuo tavolo! 
+Vai su: https://iltuositodjpilu.it</textarea>
+                <button id="btn-send-mail" style="font-size:12px; padding:10px;"><i class="fas fa-envelope-open-text"></i> Prepara Email a tutti (BCC)</button>
+            </div>
 
-    <h2 style="margin-top:35px"><i class="fas fa-star"></i> Gestisci Recensioni</h2>
-    <div id="reviews-container" style="margin-top:10px"></div>
+            <h3 style="margin-top:25px"><i class="fas fa-calendar-check"></i> Prenotazioni Ricevute</h3>
+            <div id="booking-container" class="news-list"><div style="text-align:center;padding:20px;color:#555">Caricamento...</div></div>
+        </div>
+    </div>
+
+    <div class="acc-wrap">
+        <div class="acc-head">
+            <h2><i class="fas fa-calendar-alt"></i> Gestione Locandine</h2>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="acc-content">
+            <h3><i class="fas fa-plus-circle"></i> Aggiungi Evento</h3>
+            <input type="file" id="ev-file" accept="image/*">
+            <div class="upload-progress" id="ev-progress"><div class="bar"></div></div>
+            <input type="datetime-local" id="ev-date" style="color-scheme:dark">
+            <button id="btn-add-ev">Carica Locandina</button>
+            <div id="upload-status-ev" class="status-msg"></div>
+            
+            <h3 style="margin-top:25px"><i class="fas fa-list"></i> Eventi Caricati</h3>
+            <div id="events-container"></div>
+        </div>
+    </div>
+
+    <div class="acc-wrap">
+        <div class="acc-head">
+            <h2><i class="fas fa-camera-retro"></i> Gestione Vibes</h2>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="acc-content">
+            <h3><i class="fas fa-upload"></i> Carica Media</h3>
+            <select id="gal-type">
+                <option value="image">Immagine (.jpg, .png)</option>
+                <option value="video">Video Corto (.mp4)</option>
+            </select>
+            <input type="file" id="gal-file" accept="image/*,video/mp4">
+            <div class="upload-progress" id="gal-progress"><div class="bar"></div></div>
+            <input type="number" id="gal-order" placeholder="Ordine visualizzazione (es. 1, 2...)" value="1" min="1">
+            <button id="btn-add-gal">Pubblica in Vibes</button>
+            <div id="upload-status-gal" class="status-msg"></div>
+
+            <h3 style="margin-top:25px"><i class="fas fa-images"></i> Media Caricati</h3>
+            <div id="gallery-container"></div>
+        </div>
+    </div>
+
+    <div class="acc-wrap">
+        <div class="acc-head">
+            <h2><i class="fas fa-star"></i> Gestione Recensioni</h2>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="acc-content">
+            <div id="reviews-container"></div>
+        </div>
+    </div>
 </div>
 
 <script type="module">
@@ -154,6 +199,24 @@ const storage = getStorage(app);
 
 const IMGBB_KEY = "e4660bfc2d38c3617e2bafc8230f3e37";
 let dailyStatsData = {};
+
+/* ========== LOGICA ACCORDION ========== */
+document.querySelectorAll('.acc-head').forEach(head => {
+    head.addEventListener('click', () => {
+        const content = head.nextElementSibling;
+        const isOpen = content.classList.contains('active');
+        
+        // Chiude tutti
+        document.querySelectorAll('.acc-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.acc-head').forEach(h => h.classList.remove('open'));
+        
+        // Se non era aperto, lo apre
+        if (!isOpen) {
+            content.classList.add('active');
+            head.classList.add('open');
+        }
+    });
+});
 
 /* ========== LOGIN ========== */
 document.getElementById('btn-login').addEventListener('click', () => {
@@ -248,7 +311,7 @@ function aggiornaTempoVisualizzato() {
 document.getElementById('day-selector').addEventListener('change', aggiornaTempoVisualizzato);
 function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
-/* ========== NEWSLETTER ========== */
+/* ========== NEWSLETTER E GESTIONE EMAIL ========== */
 async function loadNewsletter() {
     const nc = document.getElementById('news-container');
     nc.innerHTML = '<div style="text-align:center;padding:20px;color:#555">Caricamento...</div>';
@@ -267,22 +330,23 @@ async function loadNewsletter() {
         const item = document.createElement('div');
         item.className = 'news-item';
         item.innerHTML = `
-            <div><i class="fas fa-bell" style="color:var(--gold)"></i> <strong>${escHtml(data.contatto)}</strong></div>
+            <div><i class="fas fa-envelope" style="color:var(--gold); margin-right:8px;"></i> <strong>${escHtml(data.contatto)}</strong></div>
             <div style="display:flex; align-items:center; gap:12px;">
                 <span style="font-size:11px;color:#555">${dateStr}</span>
-                <button class="btn-del-news" data-id="${d.id}" style="background:transparent; color:#ff3b30; border:none; padding:0; margin:0; width:auto; cursor:pointer;" title="Rimuovi iscritto">
-                    <i class="fas fa-trash"></i>
+                <button class="btn-del-news" data-id="${d.id}" style="background:transparent; color:#ff3b30; border:none; padding:0; margin:0; width:auto; cursor:pointer;" title="Elimina Iscritto">
+                    <i class="fas fa-trash-alt" style="font-size:16px;"></i>
                 </button>
             </div>
         `;
         nc.appendChild(item);
     });
 
+    // Aggiungo la funzione per eliminare l'email quando si preme il cestino
     nc.querySelectorAll('.btn-del-news').forEach(btn => {
         btn.addEventListener('click', async () => {
-            if(!confirm("Sicuro di voler rimuovere questa email dalla newsletter?")) return;
+            if(!confirm("Sei sicuro di voler ELIMINARE questa email dalla newsletter?")) return;
             await deleteDoc(doc(db, "newsletter", btn.dataset.id));
-            loadNewsletter();
+            loadNewsletter(); // Ricarica la lista dopo aver eliminato
         });
     });
 }
@@ -290,7 +354,7 @@ async function loadNewsletter() {
 document.getElementById('btn-send-mail').addEventListener('click', async () => {
     const btn = document.getElementById('btn-send-mail');
     const originalText = btn.innerHTML;
-    btn.innerText = "Recupero email...";
+    btn.innerText = "Recupero email in corso...";
     
     try {
         const newsSnap = await getDocs(collection(db, "newsletter"));
@@ -301,7 +365,7 @@ document.getElementById('btn-send-mail').addEventListener('click', async () => {
         });
 
         if(emails.length === 0) {
-            alert("Nessun iscritto alla newsletter!");
+            alert("Nessun iscritto alla newsletter nel database!");
             btn.innerHTML = originalText;
             return;
         }
@@ -310,7 +374,7 @@ document.getElementById('btn-send-mail').addEventListener('click', async () => {
         const subject = document.getElementById('mail-subject').value || "Nuovo Evento - DJ Pilu";
         const body = document.getElementById('mail-body').value || "";
         
-        // Apre il client di posta
+        // Apre il client di posta predefinito del dispositivo
         window.location.href = `mailto:?bcc=${bcc}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     } catch(err) {
         console.error(err);
@@ -363,7 +427,7 @@ document.getElementById('btn-add-ev').addEventListener('click', async () => {
         status.innerText = "✅ Locandina caricata con successo!";
         fileInput.value = ""; document.getElementById('ev-date').value = ""; loadAdminEvents();
     } catch(e) { status.innerText = "❌ Errore: " + e.message; status.className = 'status-msg error'; }
-    btn.innerText = "Carica Evento"; btn.disabled = false;
+    btn.innerText = "Carica Locandina"; btn.disabled = false;
     setTimeout(() => { progress.style.display = 'none'; progress.querySelector('.bar').style.width = '0'; status.innerText = ''; }, 4000);
 });
 async function loadAdminEvents() {
@@ -393,13 +457,13 @@ async function loadAdminEvents() {
     });
     c.querySelectorAll('.btn-delete-ev').forEach(btn => {
         btn.addEventListener('click', async () => {
-            if(!confirm("Eliminare?")) return;
+            if(!confirm("Eliminare questa locandina?")) return;
             await deleteDoc(doc(db, "eventi", btn.dataset.id)); loadAdminEvents();
         });
     });
 }
 
-/* ========== GALLERY ========== */
+/* ========== GALLERY VIBES ========== */
 document.getElementById('gal-type').addEventListener('change', function() { document.getElementById('gal-file').accept = this.value === 'video' ? 'video/mp4' : 'image/*'; });
 document.getElementById('btn-add-gal').addEventListener('click', async () => {
     const fileInput = document.getElementById('gal-file');
@@ -416,7 +480,7 @@ document.getElementById('btn-add-gal').addEventListener('click', async () => {
         progress.querySelector('.bar').style.width = '100%';
         status.innerText = "✅ Media caricato!"; fileInput.value = ""; loadAdminGallery();
     } catch(e) { status.innerText = "❌ Errore: " + e.message; status.className = 'status-msg error'; }
-    btn.innerText = "Carica Media"; btn.disabled = false;
+    btn.innerText = "Pubblica in Vibes"; btn.disabled = false;
     setTimeout(() => { progress.style.display = 'none'; progress.querySelector('.bar').style.width = '0'; status.innerText = ''; }, 4000);
 });
 async function loadAdminGallery() {
@@ -433,7 +497,7 @@ async function loadAdminGallery() {
         c.appendChild(item);
     });
     c.querySelectorAll('.btn-delete-gal').forEach(btn => {
-        btn.addEventListener('click', async () => { if(!confirm("Eliminare?")) return; await deleteDoc(doc(db, "gallery", btn.dataset.id)); loadAdminGallery(); });
+        btn.addEventListener('click', async () => { if(!confirm("Eliminare da Vibes?")) return; await deleteDoc(doc(db, "gallery", btn.dataset.id)); loadAdminGallery(); });
     });
 }
 
@@ -452,7 +516,7 @@ async function loadAdminReviews() {
         c.appendChild(item);
     });
     c.querySelectorAll('.btn-delete-rev').forEach(btn => {
-        btn.addEventListener('click', async () => { if(!confirm("Eliminare?")) return; await deleteDoc(doc(db, "recensioni", btn.dataset.id)); loadAdminReviews(); });
+        btn.addEventListener('click', async () => { if(!confirm("Eliminare questa recensione?")) return; await deleteDoc(doc(db, "recensioni", btn.dataset.id)); loadAdminReviews(); });
     });
 }
 </script>
