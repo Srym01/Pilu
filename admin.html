@@ -5,97 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pilu Admin Area</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #C9A84C; --bg: #060606; --box: #141414; --border: rgba(255,255,255,0.1); --text: #F0EDE8; }
-        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px;}
-        
-        .box { background: var(--box); padding: 30px; border-radius: 14px; border: 1px solid var(--border); width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); margin-bottom: 20px; }
+        :root { --gold: #C9A84C; --gl: #E8C97A; --bg: #060606; --box: #111; --border: rgba(255,255,255,0.08); --text: #F0EDE8; --r: 14px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; -webkit-font-smoothing: antialiased; }
+
+        .box { background: var(--box); padding: 28px; border-radius: var(--r); border: 1px solid var(--border); width: 100%; max-width: 540px; box-shadow: 0 10px 40px rgba(0,0,0,.6); margin-bottom: 20px; }
         .hidden { display: none !important; }
-        
-        h1 { color: var(--gold); margin-top: 0; letter-spacing: 2px; text-transform: uppercase; font-size: 24px; text-align: center; }
-        h2 { color: #fff; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
-        
-        input, select, button, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background: #1a1a1a; color: #fff; font-family: inherit; box-sizing: border-box; }
-        input[type="file"] { background: #222; padding: 10px; cursor: pointer; }
-        button { background: var(--gold); color: #000; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; transition: opacity 0.2s; }
-        button:active { opacity: 0.8; }
-        
-        .admin-item { background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .admin-item img, .admin-item video { max-width: 100%; border-radius: 6px; }
-        .btn-del { background: #ff3b30; color: white; margin-bottom: 0; }
-        .btn-update { background: #43E660; color: #000; margin-bottom: 0; }
-        
-        .analytics-panel { border: 1px solid var(--gold); background: #0d0d0d; }
+
+        h1 { color: var(--gold); margin-top: 0; letter-spacing: 3px; text-transform: uppercase; font-size: 22px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
+        h2 { color: #fff; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        h2 i { color: var(--gold); }
+
+        input, select, button, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-family: inherit; box-sizing: border-box; font-size: 14px; transition: border-color .2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+        input[type="file"] { background: #161616; padding: 10px; cursor: pointer; }
+        button { background: linear-gradient(135deg, var(--gold), #d4b85c); color: #000; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; transition: transform .15s, box-shadow .3s; }
+        button:active { transform: scale(.97); }
+        button:hover { box-shadow: 0 4px 20px rgba(201,168,76,.25); }
+
+        .admin-item { background: #0a0a0a; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+        .admin-item img, .admin-item video { max-width: 100%; border-radius: 8px; }
+        .btn-del { background: linear-gradient(135deg, #ff3b30, #cc2d25); color: white; margin-bottom: 0; }
+        .btn-update { background: linear-gradient(135deg, #43E660, #38c950); color: #000; margin-bottom: 0; }
+
+        .analytics-panel { border-color: rgba(201,168,76,.2); background: #0a0a0a; position: relative; overflow: hidden; }
+        .analytics-panel::before { content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-box { background: #000; border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
-        .stat-num { font-size: 28px; font-weight: bold; color: var(--gold); margin-bottom: 5px; }
-        .stat-label { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .news-list { max-height: 200px; overflow-y: auto; background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
-        .news-item { padding: 10px; border-bottom: 1px solid #222; font-size: 14px; display: flex; align-items: center; gap: 10px; color: #ccc;}
+        .stat-box { background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 10px; text-align: center; }
+        .stat-num { font-size: 28px; font-weight: bold; color: var(--gold); margin-bottom: 4px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+        .stat-label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 1.5px; }
+
+        .news-list { max-height: 220px; overflow-y: auto; background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
+        .news-item { padding: 10px; border-bottom: 1px solid #181818; font-size: 13px; display: flex; align-items: center; gap: 10px; color: #bbb; }
         .news-item:last-child { border-bottom: none; }
+
+        .status-msg { margin-top: 10px; color: #43E660; font-size: 13px; font-weight: 600; }
+        .status-msg.error { color: #ff3b30; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--gold); text-decoration: none; font-size: 13px; margin-bottom: 16px; opacity: .7; transition: opacity .2s; }
+        .back-link:hover { opacity: 1; }
+
+        /* Progress bar */
+        .upload-progress { width: 100%; height: 4px; background: #222; border-radius: 2px; margin-bottom: 12px; overflow: hidden; display: none; }
+        .upload-progress .bar { height: 100%; background: linear-gradient(90deg, var(--gold), #43E660); border-radius: 2px; transition: width .3s; width: 0; }
     </style>
 </head>
 <body>
 
+<a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Torna al sito</a>
+
 <div id="login-box" class="box">
-    <h1>Area Riservata Pilu</h1>
+    <h1><i class="fas fa-headphones" style="margin-right: 8px;"></i> Area Riservata</h1>
+    <div style="text-align:center;margin:20px 0 25px;color:#555;font-size:13px;letter-spacing:1px">PANNELLO DJ PILU</div>
     <input type="password" id="password" placeholder="Password Admin">
     <button id="btn-login">Accedi</button>
-    <div id="login-error" style="color: #ff3b30; margin-top: 10px; display: none; font-size: 14px;">Password errata. Riprova.</div>
+    <div id="login-error" style="color:#ff3b30;margin-top:10px;display:none;font-size:13px;text-align:center">Password errata. Riprova.</div>
 </div>
 
 <div id="admin-box" class="box hidden">
-    <h1>Pannello DJ Pilu</h1>
-    <button id="btn-logout" style="background: #333; color: white; margin-bottom: 30px;">Esci</button>
+    <h1><i class="fas fa-crown" style="margin-right: 6px;"></i> Pannello DJ Pilu</h1>
+    <button id="btn-logout" style="background:#222;color:#aaa;margin:15px 0 25px;font-size:12px">Esci dal Pannello</button>
 
-    <div class="box analytics-panel" style="padding: 20px; width: auto; max-width: none; margin: 0 -10px 30px -10px;">
-        <h2 style="color: var(--gold); border-bottom-color: var(--gold);"><i class="fas fa-chart-line"></i> Statistiche</h2>
-        
+    <!-- ANALYTICS -->
+    <div class="box analytics-panel" style="padding:22px;width:auto;max-width:none;margin:0 -8px 28px -8px">
+        <h2><i class="fas fa-chart-line"></i> Statistiche</h2>
         <div class="stat-grid">
             <div class="stat-box">
                 <div class="stat-num" id="stat-views">0</div>
                 <div class="stat-label"><i class="fas fa-eye"></i> Visite Totali</div>
             </div>
             <div class="stat-box">
-                <div class="stat-num" id="stat-likes" style="color: #ff5050;">0</div>
+                <div class="stat-num" id="stat-likes" style="color:#ff5050">0</div>
                 <div class="stat-label"><i class="fas fa-heart"></i> Mi Piace</div>
             </div>
         </div>
-        
-        <div class="stat-box" style="margin-bottom: 20px; border-color: var(--gold);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span class="stat-label" style="color:var(--gold);">Tempo di Permanenza</span>
-                <select id="day-selector" style="width: auto; padding: 5px; margin: 0; background: #222; border: 1px solid var(--gold);"></select>
+
+        <div class="stat-box" style="margin-bottom:18px;border-color:rgba(201,168,76,.2)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <span class="stat-label" style="color:var(--gold)"><i class="fas fa-clock"></i> Tempo di Permanenza</span>
+                <select id="day-selector" style="width:auto;padding:5px 8px;margin:0;background:#111;border:1px solid rgba(201,168,76,.3);font-size:12px;border-radius:6px"></select>
             </div>
-            <div class="stat-num" id="stat-time" style="color: #43E660; font-size: 26px;">0h 0m</div>
+            <div class="stat-num" id="stat-time" style="color:#43E660;font-size:24px">0h 0m</div>
         </div>
 
-        <h2><i class="fas fa-envelope"></i> Iscritti Newsletter</h2>
-        <div id="news-container" class="news-list"></div>
+        <h2><i class="fas fa-bell"></i> Iscritti Newsletter</h2>
+        <div id="news-container" class="news-list"><div style="text-align:center;padding:20px;color:#555">Caricamento...</div></div>
+
+        <h2 style="margin-top:18px"><i class="fas fa-calendar-check"></i> Prenotazioni Ricevute</h2>
+        <div id="booking-container" class="news-list"><div style="text-align:center;padding:20px;color:#555">Caricamento...</div></div>
     </div>
 
+    <!-- EVENTI -->
     <h2><i class="fas fa-calendar-alt"></i> Aggiungi Locandina</h2>
     <input type="file" id="ev-file" accept="image/*">
-    <input type="datetime-local" id="ev-date">
+    <div class="upload-progress" id="ev-progress"><div class="bar"></div></div>
+    <input type="datetime-local" id="ev-date" style="color-scheme:dark">
     <button id="btn-add-ev">Carica Evento</button>
-    <div id="upload-status-ev" style="margin-top:10px; color:#43E660; font-size:14px;"></div>
-    <div id="events-container" style="margin-top: 20px;"></div>
+    <div id="upload-status-ev" class="status-msg"></div>
+    <div id="events-container" style="margin-top:18px"></div>
 
-    <h2 style="margin-top: 40px;"><i class="fas fa-camera"></i> Aggiungi a Vibes (Gallery)</h2>
+    <!-- GALLERY -->
+    <h2 style="margin-top:35px"><i class="fas fa-camera"></i> Aggiungi a Vibes (Gallery)</h2>
     <select id="gal-type">
         <option value="image">Immagine</option>
         <option value="video">Video (MP4)</option>
     </select>
     <input type="file" id="gal-file" accept="image/*,video/mp4">
-    <input type="number" id="gal-order" placeholder="Ordine (es. 1, 2, 3...)" value="1">
+    <div class="upload-progress" id="gal-progress"><div class="bar"></div></div>
+    <input type="number" id="gal-order" placeholder="Ordine (es. 1, 2, 3...)" value="1" min="1">
     <button id="btn-add-gal">Carica Media</button>
-    <div id="upload-status-gal" style="margin-top:10px; color:#43E660; font-size:14px;"></div>
-    <div id="gallery-container" style="margin-top: 20px;"></div>
+    <div id="upload-status-gal" class="status-msg"></div>
+    <div id="gallery-container" style="margin-top:18px"></div>
 
-    <h2 style="margin-top: 40px;"><i class="fas fa-star"></i> Gestisci Recensioni</h2>
-    <div id="reviews-container" style="margin-top: 20px;"></div>
+    <!-- RECENSIONI -->
+    <h2 style="margin-top:35px"><i class="fas fa-star"></i> Gestisci Recensioni</h2>
+    <div id="reviews-container" style="margin-top:10px"></div>
 </div>
 
 <script type="module">
@@ -116,8 +142,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+const IMGBB_KEY = "e4660bfc2d38c3617e2bafc8230f3e37";
+
 let dailyStatsData = {};
 
+/* ========== LOGIN ========== */
 document.getElementById('btn-login').addEventListener('click', () => {
     if(document.getElementById('password').value === "118") {
         document.getElementById('login-box').classList.add('hidden');
@@ -125,56 +154,136 @@ document.getElementById('btn-login').addEventListener('click', () => {
         loadAllData();
     } else {
         document.getElementById('login-error').style.display = 'block';
+        document.getElementById('password').value = '';
     }
 });
-
+document.getElementById('password').addEventListener('keydown', e => {
+    if(e.key === 'Enter') document.getElementById('btn-login').click();
+});
 document.getElementById('btn-logout').addEventListener('click', () => location.reload());
 
+/* ========== UPLOAD IMMAGINE SU IMGBB ========== */
+async function uploadToImgBB(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const base64 = reader.result.split(',')[1];
+                const formData = new FormData();
+                formData.append('key', IMGBB_KEY);
+                formData.append('image', base64);
+                formData.append('name', Date.now() + '_' + file.name);
+
+                const resp = await fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await resp.json();
+                if(data.success) {
+                    resolve(data.data.url);
+                } else {
+                    reject(new Error(data.error?.message || 'Upload imgBB fallito'));
+                }
+            } catch(e) { reject(e); }
+        };
+        reader.onerror = () => reject(new Error('Errore lettura file'));
+        reader.readAsDataURL(file);
+    });
+}
+
+/* ========== UPLOAD VIDEO SU FIREBASE STORAGE ========== */
+async function uploadVideoToStorage(file, folder) {
+    const fileRef = ref(storage, folder + '/' + Date.now() + '_' + file.name);
+    await uploadBytes(fileRef, file);
+    return await getDownloadURL(fileRef);
+}
+
+/* ========== LOAD ALL ========== */
 function loadAllData() {
     loadAnalytics();
     loadAdminEvents();
     loadAdminGallery();
     loadAdminReviews();
+    loadBookings();
 }
 
+/* ========== ANALYTICS ========== */
 async function loadAnalytics() {
-    // Views globali
     const snap = await getDoc(doc(db, "stats", "global"));
-    if (snap.exists()) {
+    if(snap.exists()) {
         document.getElementById('stat-views').innerText = snap.data().views || 0;
         document.getElementById('stat-likes').innerText = snap.data().likes || 0;
     }
 
-    // Tempo giornaliero
+    /* Tempo giornaliero */
     const daySnap = await getDocs(collection(db, "stats_daily"));
     const selector = document.getElementById('day-selector');
     selector.innerHTML = '';
     dailyStatsData = {};
 
-    if(daySnap.empty) {
+    const sortedDays = [];
+    daySnap.forEach(d => {
+        dailyStatsData[d.id] = d.data().totalTimeSec || 0;
+        sortedDays.push(d.id);
+    });
+    sortedDays.sort();
+
+    if(sortedDays.length === 0) {
         selector.innerHTML = '<option>Nessun dato</option>';
+        document.getElementById('stat-time').innerText = '0h 0m';
     } else {
-        daySnap.forEach(d => {
-            dailyStatsData[d.id] = d.data().totalTimeSec || 0;
+        sortedDays.forEach(day => {
             const opt = document.createElement('option');
-            opt.value = d.id;
-            opt.innerText = d.id; // Mostra YYYY-MM-DD
+            opt.value = day;
+            /* Formatta come DD/MM/YYYY */
+            const parts = day.split('-');
+            opt.innerText = parts[2] + '/' + parts[1] + '/' + parts[0];
             selector.appendChild(opt);
         });
-        
-        // Seleziona l'ultimo giorno per default
         selector.selectedIndex = selector.options.length - 1;
         aggiornaTempoVisualizzato();
     }
 
-    // Iscritti
+    /* Iscritti */
     const newsSnap = await getDocs(query(collection(db, "newsletter"), orderBy("dataIscrizione", "desc")));
-    document.getElementById('news-container').innerHTML = "";
-    newsSnap.forEach(d => {
-        const data = d.data();
-        const dateStr = data.dataIscrizione ? new Date(data.dataIscrizione.toDate()).toLocaleDateString('it-IT') : '';
-        document.getElementById('news-container').innerHTML += `<div class="news-item"><i class="fas fa-bell" style="color:var(--gold)"></i> <strong>${data.contatto}</strong> <span style="font-size:11px; margin-left:auto;">${dateStr}</span></div>`;
-    });
+    const nc = document.getElementById('news-container');
+    nc.innerHTML = "";
+    if(newsSnap.empty) {
+        nc.innerHTML = '<div style="text-align:center;padding:20px;color:#555">Nessun iscritto</div>';
+    } else {
+        newsSnap.forEach(d => {
+            const data = d.data();
+            const dateStr = data.dataIscrizione ? new Date(data.dataIscrizione.toDate()).toLocaleDateString('it-IT') : '';
+            nc.innerHTML += `<div class="news-item"><i class="fas fa-bell" style="color:var(--gold)"></i> <strong>${escHtml(data.contatto)}</strong> <span style="font-size:11px;margin-left:auto;color:#555">${dateStr}</span></div>`;
+        });
+    }
+}
+
+async function loadBookings() {
+    const bc = document.getElementById('booking-container');
+    bc.innerHTML = '';
+    try {
+        const snap = await getDocs(query(collection(db, "booking"), orderBy("timestamp", "desc")));
+        if(snap.empty) {
+            bc.innerHTML = '<div style="text-align:center;padding:20px;color:#555">Nessuna prenotazione</div>';
+        } else {
+            snap.forEach(d => {
+                const data = d.data();
+                const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString('it-IT') : '';
+                bc.innerHTML += `<div class="news-item" style="flex-direction:column;align-items:flex-start;gap:4px">
+                    <div style="display:flex;width:100%;justify-content:space-between;align-items:center">
+                        <strong style="color:var(--gold)">${escHtml(data.nome)}</strong>
+                        <span style="font-size:11px;color:#555">${dateStr}</span>
+                    </div>
+                    <div style="font-size:12px;color:#888"><i class="fas fa-phone" style="margin-right:4px"></i>${escHtml(data.contatto)}</div>
+                    ${data.dataEvento ? `<div style="font-size:12px;color:#888"><i class="fas fa-calendar" style="margin-right:4px"></i>${data.dataEvento}</div>` : ''}
+                    ${data.dettagli ? `<div style="font-size:12px;color:#666;font-style:italic">${escHtml(data.dettagli)}</div>` : ''}
+                </div>`;
+            });
+        }
+    } catch(e) {
+        bc.innerHTML = '<div style="text-align:center;padding:20px;color:#555">Errore caricamento</div>';
+    }
 }
 
 function aggiornaTempoVisualizzato() {
@@ -182,62 +291,200 @@ function aggiornaTempoVisualizzato() {
     const totalSec = dailyStatsData[selectedDate] || 0;
     const ore = Math.floor(totalSec / 3600);
     const minuti = Math.floor((totalSec % 3600) / 60);
-    document.getElementById('stat-time').innerText = `${ore}h ${minuti}m`;
+    const secondi = totalSec % 60;
+    document.getElementById('stat-time').innerText = ore > 0 ? `${ore}h ${minuti}m` : `${minuti}m ${secondi}s`;
 }
 document.getElementById('day-selector').addEventListener('change', aggiornaTempoVisualizzato);
 
-// CARICAMENTO EVENTI CON STORAGE
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+/* ========== EVENTI (imgBB per immagini) ========== */
 document.getElementById('btn-add-ev').addEventListener('click', async () => {
     const fileInput = document.getElementById('ev-file');
     const date = document.getElementById('ev-date').value;
     const status = document.getElementById('upload-status-ev');
+    const progress = document.getElementById('ev-progress');
 
     if(fileInput.files.length === 0 || !date) return alert("Seleziona un'immagine e una data!");
-    
+
     const file = fileInput.files[0];
-    document.getElementById('btn-add-ev').innerText = "Caricamento...";
-    status.innerText = "Upload immagine in corso...";
+    const btn = document.getElementById('btn-add-ev');
+    btn.innerText = "Caricamento...";
+    btn.disabled = true;
+    status.innerText = "";
+    status.className = 'status-msg';
+    progress.style.display = 'block';
+    progress.querySelector('.bar').style.width = '30%';
 
     try {
-        const fileRef = ref(storage, 'eventi/' + Date.now() + '_' + file.name);
-        await uploadBytes(fileRef, file);
-        const downloadURL = await getDownloadURL(fileRef);
+        /* Upload immagine su imgBB */
+        const downloadURL = await uploadToImgBB(file);
+        progress.querySelector('.bar').style.width = '80%';
 
         await addDoc(collection(db, "eventi"), { img: downloadURL, date: date + ":00" });
-        status.innerText = "Locandina caricata con successo!";
-        fileInput.value = ""; document.getElementById('ev-date').value = "";
+        progress.querySelector('.bar').style.width = '100%';
+
+        status.innerText = "✅ Locandina caricata con successo!";
+        fileInput.value = "";
+        document.getElementById('ev-date').value = "";
         loadAdminEvents();
     } catch(e) {
-        status.innerText = "Errore durante l'upload!"; console.error(e);
+        status.innerText = "❌ Errore durante l'upload: " + e.message;
+        status.className = 'status-msg error';
+        console.error(e);
     }
-    document.getElementById('btn-add-ev').innerText = "Carica Evento";
-    setTimeout(() => status.innerText="", 4000);
+    btn.innerText = "Carica Evento";
+    btn.disabled = false;
+    setTimeout(() => { progress.style.display = 'none'; progress.querySelector('.bar').style.width = '0'; status.innerText = ''; }, 4000);
 });
 
 async function loadAdminEvents() {
-    const c = document.getElementById('events-container'); c.innerHTML = "";
+    const c = document.getElementById('events-container');
+    c.innerHTML = '<div style="text-align:center;color:#555;padding:10px">Caricamento...</div>';
     const snap = await getDocs(query(collection(db, "eventi"), orderBy("date", "asc")));
+    c.innerHTML = '';
+    if(snap.empty) { c.innerHTML = '<div style="text-align:center;color:#555;padding:10px">Nessun evento</div>'; return; }
     snap.forEach(d => {
-        c.innerHTML += `<div class="admin-item"><img src="${d.data().img}"><input type="datetime-local" id="date-${d.id}" value="${d.data().date.substring(0,16)}"><button class="btn-update" onclick="aggiornaData('${d.id}')">Aggiorna Data</button><button class="btn-del" onclick="eliminaDoc('eventi', '${d.id}')"><i class="fas fa-trash"></i> Elimina</button></div>`;
+        const item = document.createElement('div');
+        item.className = 'admin-item';
+        item.innerHTML = `
+            <img src="${d.data().img}" loading="lazy">
+            <input type="datetime-local" class="date-input" data-id="${d.id}" value="${(d.data().date || '').substring(0,16)}" style="color-scheme:dark">
+            <button class="btn-update btn-update-date" data-id="${d.id}"><i class="fas fa-save"></i> Aggiorna Data</button>
+            <button class="btn-del btn-delete-ev" data-id="${d.id}"><i class="fas fa-trash"></i> Elimina</button>`;
+        c.appendChild(item);
+    });
+
+    /* Event delegation */
+    c.querySelectorAll('.btn-update-date').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const input = c.querySelector(`.date-input[data-id="${id}"]`);
+            if(!input.value) return;
+            btn.innerText = "Aggiornamento...";
+            await updateDoc(doc(db, "eventi", id), { date: input.value + ":00" });
+            btn.innerHTML = '<i class="fas fa-check"></i> Aggiornato!';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Aggiorna Data'; }, 2000);
+        });
+    });
+    c.querySelectorAll('.btn-delete-ev').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if(!confirm("Eliminare questo evento?")) return;
+            await deleteDoc(doc(db, "eventi", btn.dataset.id));
+            loadAdminEvents();
+        });
     });
 }
 
-// CARICAMENTO GALLERY CON STORAGE
+/* ========== GALLERY (imgBB per immagini, Firebase Storage per video) ========== */
+document.getElementById('gal-type').addEventListener('change', function() {
+    document.getElementById('gal-file').accept = this.value === 'video' ? 'video/mp4' : 'image/*';
+});
+
 document.getElementById('btn-add-gal').addEventListener('click', async () => {
     const fileInput = document.getElementById('gal-file');
     const type = document.getElementById('gal-type').value;
-    const order = parseInt(document.getElementById('gal-order').value);
+    const order = parseInt(document.getElementById('gal-order').value) || 1;
     const status = document.getElementById('upload-status-gal');
+    const progress = document.getElementById('gal-progress');
 
     if(fileInput.files.length === 0) return alert("Seleziona un file!");
-    
+
     const file = fileInput.files[0];
-    document.getElementById('btn-add-gal').innerText = "Caricamento...";
-    status.innerText = "Upload media in corso... attendi.";
+    const btn = document.getElementById('btn-add-gal');
+    btn.innerText = "Caricamento...";
+    btn.disabled = true;
+    status.innerText = "";
+    status.className = 'status-msg';
+    progress.style.display = 'block';
+    progress.querySelector('.bar').style.width = '20%';
 
     try {
-        const fileRef = ref(storage, 'gallery/' + Date.now() + '_' + file.name);
-        await uploadBytes(fileRef, file);
-        const downloadURL = await getDownloadURL(fileRef);
+        let downloadURL;
+        if(type === 'video') {
+            /* I video vanno su Firebase Storage (imgBB non supporta video) */
+            status.innerText = "Upload video su Firebase Storage...";
+            downloadURL = await uploadVideoToStorage(file, 'gallery');
+        } else {
+            /* Le immagini vanno su imgBB */
+            status.innerText = "Upload immagine su imgBB...";
+            downloadURL = await uploadToImgBB(file);
+        }
+        progress.querySelector('.bar').style.width = '80%';
 
-        await addDoc(collection(db,
+        await addDoc(collection(db, "gallery"), { src: downloadURL, type: type, ordine: order });
+        progress.querySelector('.bar').style.width = '100%';
+
+        status.innerText = "✅ Media caricato con successo!";
+        fileInput.value = "";
+        loadAdminGallery();
+    } catch(e) {
+        status.innerText = "❌ Errore: " + e.message;
+        status.className = 'status-msg error';
+        console.error(e);
+    }
+    btn.innerText = "Carica Media";
+    btn.disabled = false;
+    setTimeout(() => { progress.style.display = 'none'; progress.querySelector('.bar').style.width = '0'; status.innerText = ''; }, 4000);
+});
+
+async function loadAdminGallery() {
+    const c = document.getElementById('gallery-container');
+    c.innerHTML = '<div style="text-align:center;color:#555;padding:10px">Caricamento...</div>';
+    const snap = await getDocs(query(collection(db, "gallery"), orderBy("ordine", "asc")));
+    c.innerHTML = '';
+    if(snap.empty) { c.innerHTML = '<div style="text-align:center;color:#555;padding:10px">Nessun media</div>'; return; }
+    snap.forEach(d => {
+        const data = d.data();
+        const item = document.createElement('div');
+        item.className = 'admin-item';
+        const isVideo = data.type === 'video';
+        item.innerHTML = `
+            ${isVideo ? `<video src="${data.src}" controls playsinline style="max-height:200px"></video>` : `<img src="${data.src}" loading="lazy">`}
+            <div style="font-size:12px;color:#666;display:flex;justify-content:space-between">
+                <span>${isVideo ? '🎬 Video' : '🖼️ Immagine'}</span>
+                <span>Ordine: ${data.ordine || 0}</span>
+            </div>
+            <button class="btn-del btn-delete-gal" data-id="${d.id}"><i class="fas fa-trash"></i> Elimina</button>`;
+        c.appendChild(item);
+    });
+    c.querySelectorAll('.btn-delete-gal').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if(!confirm("Eliminare questo media?")) return;
+            await deleteDoc(doc(db, "gallery", btn.dataset.id));
+            loadAdminGallery();
+        });
+    });
+}
+
+/* ========== RECENSIONI ========== */
+async function loadAdminReviews() {
+    const c = document.getElementById('reviews-container');
+    c.innerHTML = '<div style="text-align:center;color:#555;padding:10px">Caricamento...</div>';
+    const snap = await getDocs(query(collection(db, "recensioni"), orderBy("timestamp", "desc")));
+    c.innerHTML = '';
+    if(snap.empty) { c.innerHTML = '<div style="text-align:center;color:#555;padding:10px">Nessuna recensione</div>'; return; }
+    snap.forEach(d => {
+        const data = d.data();
+        const item = document.createElement('div');
+        item.className = 'admin-item';
+        item.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong style="color:var(--gold)">${escHtml(data.nome)}</strong>
+                <span style="font-size:12px">${"⭐".repeat(data.stelle || 0)}</span>
+            </div>
+            <div style="font-size:13px;color:#999;font-style:italic">"${escHtml(data.testo)}"</div>
+            <button class="btn-del btn-delete-rev" data-id="${d.id}"><i class="fas fa-trash"></i> Elimina</button>`;
+        c.appendChild(item);
+    });
+    c.querySelectorAll('.btn-delete-rev').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if(!confirm("Eliminare questa recensione?")) return;
+            await deleteDoc(doc(db, "recensioni", btn.dataset.id));
+            loadAdminReviews();
+        });
+    });
+}
+</script>
+</body>
+</html>
