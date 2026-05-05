@@ -208,11 +208,22 @@ Vai su: https://iltuositodjpilu.it</textarea>
             <i class="fas fa-chevron-down chevron"></i>
         </div>
         <div class="acc-content">
-            <div class="sec-label"><i class="fas fa-plus-circle"></i> Aggiungi Evento</div>
-            <input type="file" id="ev-file" accept="image/*" class="mb">
-            <input type="datetime-local" id="ev-date" style="color-scheme:dark" class="mb">
+            <div class="sec-label"><i class="fas fa-plus-circle"></i> Aggiungi Evento / Locandina</div>
+            <!-- Multi file per eventi -->
+            <input type="file" id="ev-file" accept="image/*" multiple class="mb">
+            <div class="batch-queue" id="ev-batch-queue" style="margin-bottom:12px">
+                <div class="batch-count" id="ev-batch-count"></div>
+                <div id="ev-batch-list"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+                <div style="flex:1">
+                    <div class="sec-label" style="margin-bottom:5px;font-size:10px"><i class="fas fa-calendar"></i> Data primo evento</div>
+                    <input type="datetime-local" id="ev-date" style="color-scheme:dark;margin:0">
+                </div>
+            </div>
+            <div style="font-size:11px;color:#444;margin-bottom:10px">💡 Se carichi più locandine, la data si applica solo alla prima. Potrai modificare le altre dopo.</div>
             <div class="progress-wrap" id="ev-progress"><div class="progress-bar"></div></div>
-            <button id="btn-add-ev"><i class="fas fa-cloud-upload-alt"></i> Carica Locandina</button>
+            <button id="btn-add-ev"><i class="fas fa-cloud-upload-alt"></i> Carica Locandina/e</button>
             <div class="status-msg" id="upload-status-ev" style="margin-top:10px"></div>
 
             <div class="divider"></div>
@@ -479,25 +490,65 @@ async function loadBookings() {
     } catch(e) { bc.innerHTML = '<div class="list-empty">Errore caricamento</div>'; }
 }
 
-/* ── EVENTI ─── */
+/* ── EVENTI — MULTI UPLOAD ─── */
+
+// Preview coda file selezionati
+document.getElementById('ev-file').addEventListener('change', function() {
+    const files = Array.from(this.files);
+    const queue = document.getElementById('ev-batch-queue');
+    const list  = document.getElementById('ev-batch-list');
+    const count = document.getElementById('ev-batch-count');
+    if(!files.length){ queue.classList.remove('show'); return; }
+    count.textContent = files.length + (files.length===1?' locandina selezionata':' locandine selezionate');
+    list.innerHTML='';
+    files.forEach(f=>{
+        const row=document.createElement('div');row.className='batch-item';row.dataset.name=f.name;
+        row.innerHTML=`<span class="bi-name"><i class="fas fa-image" style="color:#444;margin-right:6px"></i>${escHtml(f.name)}</span><span class="bi-status">In attesa</span>`;
+        list.appendChild(row);
+    });
+    queue.classList.add('show');
+});
+
 document.getElementById('btn-add-ev').addEventListener('click', async () => {
     const fileInput = document.getElementById('ev-file');
-    const date = document.getElementById('ev-date').value;
-    if(!fileInput.files.length || !date) return alert("Seleziona un'immagine e una data!");
+    const date      = document.getElementById('ev-date').value;
+    const files     = Array.from(fileInput.files);
+    if(!files.length) return alert("Seleziona almeno un'immagine!");
+
     const btn = document.getElementById('btn-add-ev');
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Caricamento...';
-    showProgress('ev-progress', 20);
-    try {
-        const url = await uploadToImgBB(fileInput.files[0]);
-        showProgress('ev-progress', 80);
-        await addDoc(collection(db, "eventi"), { img: url, date: date + ":00" });
-        showProgress('ev-progress', 100);
-        setStatus('upload-status-ev', '✅ Locandina caricata!', 'ok');
-        fileInput.value = ""; document.getElementById('ev-date').value = "";
-        loadAdminEvents();
-    } catch(e) { setStatus('upload-status-ev', '❌ Errore: ' + e.message, 'err'); }
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Carica Locandina';
-    setTimeout(() => { showProgress('ev-progress', null); document.getElementById('upload-status-ev').className = 'status-msg'; }, 4000);
+    btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Caricamento...';
+    showProgress('ev-progress',5);
+
+    let done=0, errors=0;
+    let currentDate=date;
+
+    for(const file of files){
+        const rowEl=document.querySelector(`#ev-batch-list .batch-item[data-name="${CSS.escape(file.name)}"]`);
+        if(rowEl){rowEl.className='batch-item uploading';rowEl.querySelector('.bi-status').textContent='Caricamento...';}
+        try{
+            const url=await uploadToImgBB(file);
+            // Prima locandina usa la data inserita, le altre senza data (si aggiorna dopo)
+            const docDate = done===0 && currentDate ? currentDate+":00" : "";
+            await addDoc(collection(db,"eventi"),{img:url, date: docDate});
+            done++;
+            if(rowEl){rowEl.className='batch-item done';rowEl.querySelector('.bi-status').textContent='✓ Caricata';}
+        }catch(e){
+            errors++;
+            if(rowEl){rowEl.className='batch-item error';rowEl.querySelector('.bi-status').textContent='✗ Errore';}
+        }
+        showProgress('ev-progress', Math.round((done+errors)/files.length*90)+5);
+        btn.innerHTML=`<i class="fas fa-spinner fa-spin"></i> ${done+errors}/${files.length}...`;
+    }
+
+    showProgress('ev-progress',100);
+    if(errors===0) setStatus('upload-status-ev',`✅ ${done} locandina/e caricate!`,'ok');
+    else setStatus('upload-status-ev',`⚠️ ${done} ok, ${errors} errori`,'err');
+
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-cloud-upload-alt"></i> Carica Locandina/e';
+    fileInput.value=''; document.getElementById('ev-date').value='';
+    document.getElementById('ev-batch-queue').classList.remove('show');
+    loadAdminEvents();
+    setTimeout(()=>{showProgress('ev-progress',null);document.getElementById('upload-status-ev').className='status-msg';},5000);
 });
 
 async function loadAdminEvents() {
