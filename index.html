@@ -107,9 +107,9 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--dark);color
 .carousel-track-wrap.dragging{cursor:grabbing}
 .carousel-track{display:flex;gap:18px;padding:0 24px;transition:transform .4s cubic-bezier(.25,.46,.45,.94);will-change:transform}
 .carousel-track.no-anim{transition:none!important}
-.ec{flex:0 0 calc(100vw - 60px);max-width:480px;border-radius:var(--r);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.75);border:1px solid var(--bd);background:var(--d2);transition:box-shadow .35s,opacity .35s,transform .35s;opacity:.5;transform:scale(.93)}
-.ec.active-card{opacity:1;transform:scale(1);box-shadow:0 30px 80px rgba(0,0,0,.9),0 0 40px rgba(201,168,76,.08)}
-.ec.concluded{opacity:.3!important;filter:grayscale(.5)}
+.ec{flex:0 0 calc(100vw - 60px);max-width:480px;border-radius:var(--r);overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.6);border:1px solid var(--bd);background:var(--d2);transition:box-shadow .35s,transform .35s;transform:scale(.95)}
+.ec.active-card{transform:scale(1);box-shadow:0 30px 80px rgba(0,0,0,.9),0 0 40px rgba(201,168,76,.08)}
+.ec.concluded{opacity:.4!important;filter:grayscale(.5)}
 .ef{width:100%;display:block;border-radius:var(--r) var(--r) 0 0}
 .efoot{padding:16px 20px 20px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(13,13,13,0),rgba(13,13,13,1))}
 .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px}
@@ -217,7 +217,7 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
     </div>
 </div>
 
-<audio id="bg-audio" loop preload="none"><source src="audio.mp3" type="audio/mpeg"></audio>
+<audio id="bg-audio" loop preload="auto"><source src="audio.mp3" type="audio/mpeg"></audio>
 <div id="player">
     <button id="ppb"><i class="fas fa-play"></i></button>
     <div class="viz" id="viz"><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div></div>
@@ -343,8 +343,10 @@ const db=getFirestore(app);
 const audio=document.getElementById('bg-audio'),ppb=document.getElementById('ppb'),viz=document.getElementById('viz'),playerEl=document.getElementById('player');
 audio.volume=.7;
 function startAudio(){audio.play().then(()=>{viz.classList.add('on');ppb.innerHTML='<i class="fas fa-pause"></i>';playerEl.classList.add('playing');}).catch(()=>{});}
-ppb.addEventListener('click',()=>{if(audio.paused){audio.load();startAudio();}else{audio.pause();ppb.innerHTML='<i class="fas fa-play"></i>';viz.classList.remove('on');playerEl.classList.remove('playing');}});
-document.body.addEventListener('click',()=>{if(audio.paused){audio.load();startAudio();}},{once:true});
+ppb.addEventListener('click',()=>{if(audio.paused){startAudio();}else{audio.pause();ppb.innerHTML='<i class="fas fa-play"></i>';viz.classList.remove('on');playerEl.classList.remove('playing');}});
+document.body.addEventListener('click',()=>{if(audio.paused){startAudio();}},{once:true});
+// Tenta autoplay appena la pagina è pronta
+window.addEventListener('load',()=>startAudio());
 
 /* ── HERO VIDEO ── */
 function loadHeroVideo(){const v=document.getElementById('hv');v.addEventListener('canplay',()=>{v.classList.add('loaded');v.play().catch(()=>{});},{once:true});v.load();}
@@ -428,13 +430,40 @@ let carouselCards=[], carouselIdx=0;
  * (without trailing Z, so no UTC shift issue)
  */
 function parseEventDate(s){
-    if(!s)return 0;
-    const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-    if(m)return new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]).getTime();
-    // fallback per date senza T (es. "2026-06-15 22:00:00")
-    const m2=s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})/);
-    if(m2)return new Date(+m2[1],+m2[2]-1,+m2[3],+m2[4],+m2[5]).getTime();
-    return new Date(s).getTime();
+    if(!s || String(s).trim()==='')return 0;
+    s=String(s).trim();
+
+    // Formato "2026-06-15T22:00" oppure "2026-06-15T22:00:00"
+    const m=s.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+    if(m){
+        const ts=new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]).getTime();
+        if(!isNaN(ts))return ts;
+    }
+    // Solo data "2026-06-15"
+    const d=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(d){
+        const ts=new Date(+d[1],+d[2]-1,+d[3],23,59).getTime();
+        if(!isNaN(ts))return ts;
+    }
+    // Formato italiano "15/06/2026" o "15-06-2026"
+    const it=s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+    if(it){
+        const ts=new Date(+it[3],+it[2]-1,+it[1],20,0).getTime();
+        if(!isNaN(ts))return ts;
+    }
+    // Qualsiasi altro formato: rimpiazza T con spazio e slash con trattino
+    const cleaned=s.replace('T',' ');
+    const ts2=Date.parse(cleaned);
+    if(!isNaN(ts2)){
+        // Date.parse usa UTC per "2026-06-15 22:00:00", aggiustiamo con offset locale
+        const d2=new Date(cleaned);
+        if(!isNaN(d2.getTime())){
+            // Forza lettura come locale aggiungendo offset
+            const offset=new Date().getTimezoneOffset()*60000;
+            return ts2+offset;
+        }
+    }
+    return 0;
 }
 
 function buildEvents(data){
@@ -447,7 +476,11 @@ function buildEvents(data){
     function makeCard(ev,concluded){
         const el=document.createElement('div');
         el.className='ec'+(concluded?' concluded':'');
-        el.innerHTML=`<img src="${ev.img}" class="ef" loading="lazy" draggable="false"><div class="efoot"><div class="cd" data-date="${ev.date}"></div></div>`;
+        // Se la data è vuota non mostrare il countdown
+        const footerContent = ev.date && ev.date.trim()
+            ? `<div class="cd" data-date="${ev.date}"></div>`
+            : `<div style="font-family:'Space Grotesk',sans-serif;font-size:3vw;color:rgba(255,255,255,.25);letter-spacing:2px">DATA DA DEFINIRE</div>`;
+        el.innerHTML=`<img src="${ev.img}" class="ef" loading="lazy" draggable="false"><div class="efoot">${footerContent}</div>`;
         return el;
     }
     up.forEach(e=>{const c=makeCard(e,false);track.appendChild(c);carouselCards.push(c);});
@@ -545,8 +578,12 @@ animDust();
 const prevSec={};
 function tick(){
     const now=Date.now();
-    document.querySelectorAll('.cd').forEach((el,idx)=>{
-        const diff=parseEventDate(el.dataset.date)-now;
+    document.querySelectorAll('.cd[data-date]').forEach((el,idx)=>{
+        const dateStr=el.dataset.date;
+        if(!dateStr||dateStr.trim()===''){return;}
+        const target=parseEventDate(dateStr);
+        if(target===0){return;}
+        const diff=target-now;
         if(diff<=0){el.innerHTML='<span class="conc">Concluso</span>';return;}
         const GG=Math.floor(diff/864e5),HH=Math.floor(diff%864e5/36e5),MM=Math.floor(diff%36e5/6e4),SS=Math.floor(diff%6e4/1e3);
         const pad=n=>String(n).padStart(2,'0');
@@ -574,6 +611,7 @@ function tick(){
     });
 }
 setInterval(tick,1000);
+tick(); // esegui subito senza aspettare 1 secondo
 
 /* ── GALLERY ── */
 function buildGallery(items){
