@@ -40,8 +40,8 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--dark);color
 .hp-views{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;background:rgba(6,6,6,.75);border:1px solid var(--bd);backdrop-filter:blur(24px);font-size:3vw;font-weight:600;color:var(--light);box-shadow:0 2px 12px rgba(0,0,0,.5)}
 .hp-views i{font-size:3vw;color:rgba(255,255,255,.3)}
 
-/* LIKE BUTTON prominente */
-#like-btn{display:flex;align-items:center;gap:9px;padding:10px 18px;border-radius:30px;background:rgba(6,6,6,.85);border:1.5px solid rgba(255,80,80,.35);backdrop-filter:blur(24px);cursor:pointer;user-select:none;transition:border-color .3s,box-shadow .4s,transform .15s;box-shadow:0 0 20px rgba(255,80,80,.1);pointer-events:auto}
+/* LIKE BUTTON — fixed indipendente, sempre visibile in alto a destra */
+#like-btn{position:fixed;top:14px;right:16px;z-index:1001;display:flex;align-items:center;gap:9px;padding:10px 18px;border-radius:30px;background:rgba(6,6,6,.85);border:1.5px solid rgba(255,80,80,.35);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);cursor:pointer;user-select:none;transition:border-color .3s,box-shadow .4s,transform .15s;box-shadow:0 0 20px rgba(255,80,80,.1)}
 #like-btn .like-icon{font-size:5vw;color:#ff5050;transition:transform .3s;filter:drop-shadow(0 0 6px rgba(255,80,80,.5))}
 #like-btn .like-count{font-size:4.5vw;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif}
 #like-btn .like-label{font-size:2.6vw;color:rgba(255,255,255,.35);font-family:'Space Grotesk',sans-serif;letter-spacing:1px;text-transform:uppercase}
@@ -66,7 +66,7 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--dark);color
 .player-track{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.5px;font-family:'Space Grotesk',sans-serif}
 
 /* CANVAS */
-#sc{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;mix-blend-mode:screen}
+#sc{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.3;mix-blend-mode:screen}
 #dust-canvas{position:fixed;inset:0;z-index:9998;pointer-events:none}
 
 /* HERO */
@@ -96,21 +96,23 @@ body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--dark);color
 .sec-hd{display:flex;align-items:baseline;gap:14px;padding:0 24px;margin-bottom:10px}
 .sec-n{font-family:'Space Grotesk',sans-serif;font-size:2.8vw;color:rgba(201,168,76,.5);letter-spacing:3px;font-weight:700}
 .sec-t{font-family:'Bebas Neue',sans-serif;font-size:13vw;letter-spacing:2px;line-height:1;color:var(--light)}
-.gold-line{width:50px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:0 24px 28px}
+.gold-line{width:120px;height:2px;margin:0 24px 28px;position:relative;overflow:hidden;background:rgba(201,168,76,.12);border-radius:2px}
+.gold-line::after{content:'';position:absolute;top:0;left:-60px;width:60px;height:100%;background:linear-gradient(90deg,transparent,var(--gold),var(--gl),var(--gold),transparent);border-radius:2px;animation:gold-sweep 2.2s ease-in-out infinite}
+@keyframes gold-sweep{0%{left:-60px;opacity:.7}50%{opacity:1}100%{left:calc(120px + 60px);opacity:.7}}
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
 .reveal.on{opacity:1;transform:none}
 
 /* EVENTS CAROUSEL */
 #events-section{overflow:hidden}
 .carousel-outer{position:relative;padding:0 0 20px}
-.carousel-track-wrap{overflow:hidden;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.carousel-track-wrap{overflow:hidden;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
 .carousel-track-wrap.dragging{cursor:grabbing}
 .carousel-track{display:flex;gap:18px;padding:0 24px;transition:transform .4s cubic-bezier(.25,.46,.45,.94);will-change:transform}
 .carousel-track.no-anim{transition:none!important}
 .ec{flex:0 0 calc(100vw - 60px);max-width:480px;border-radius:var(--r);overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.6);border:1px solid var(--bd);background:var(--d2);transition:box-shadow .35s,transform .35s;transform:scale(.95)}
 .ec.active-card{transform:scale(1);box-shadow:0 30px 80px rgba(0,0,0,.9),0 0 40px rgba(201,168,76,.08)}
 .ec.concluded{opacity:.4!important;filter:grayscale(.5)}
-.ef{width:100%;display:block;border-radius:var(--r) var(--r) 0 0}
+.ef{width:100%;display:block;border-radius:var(--r) var(--r) 0 0;filter:none!important;opacity:1!important}
 .efoot{padding:16px 20px 20px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(13,13,13,0),rgba(13,13,13,1))}
 .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px}
 .carousel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s,width .3s;cursor:pointer}
@@ -209,12 +211,13 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
     </div>
     <div class="hr">
         <div class="hp-views"><i class="fas fa-eye"></i><span id="view-counter">—</span></div>
-        <div id="like-btn">
-            <i class="fas fa-heart like-icon"></i>
-            <span class="like-count" id="like-text">0</span>
-            <span class="like-label">Like</span>
-        </div>
     </div>
+</div>
+<!-- Like button separato: position:fixed indipendente, non influenzato dallo scroll -->
+<div id="like-btn">
+    <i class="fas fa-heart like-icon"></i>
+    <span class="like-count" id="like-text">0</span>
+    <span class="like-label">Like</span>
 </div>
 
 <audio id="bg-audio" loop preload="auto"><source src="audio.mp3" type="audio/mpeg"></audio>
@@ -240,7 +243,7 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
     <div class="hi2">
         <div class="he"><span class="ld"></span> On Tour</div>
         <h1 class="hn">PILU</h1>
-        <p class="htag">Pierluigi Berardi <span>·</span> Afro House <span>·</span> San Marino 🇸🇲</p>
+        <p class="htag">Pierluigi Berardi <span>·</span> San Marino 🇸🇲</p>
     </div>
     <div class="scroll-hint">
         <span>Scroll</span>
@@ -251,7 +254,7 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 <section class="section" id="events-section">
     <div class="sec-hd reveal"><span class="sec-n">01</span><h2 class="sec-t">Shows</h2></div>
     <div class="gold-line reveal"></div>
-    <div class="carousel-outer reveal">
+    <div style="position:relative;padding:0 0 20px">
         <div class="carousel-track-wrap" id="carousel-wrap">
             <div class="carousel-track" id="carousel-track"></div>
         </div>
@@ -521,9 +524,25 @@ function initCarouselDrag(){
     wrap._dragInit=true;
     let dragging=false,startX=0,startIdx=0,lastX=0,lastT=0,vel=0;
 
-    function begin(x){dragging=true;startX=x;startIdx=carouselIdx;lastX=x;lastT=Date.now();vel=0;wrap.classList.add('dragging');track.classList.add('no-anim');}
-    function move(x){
+    let startY=0; // traccia anche Y per rilevare direzione
+    let dirLocked=null; // 'h' orizzontale, 'v' verticale, null non ancora deciso
+
+    function begin(x,y){dragging=true;startX=x;startIdx=carouselIdx;lastX=x;lastT=Date.now();vel=0;startY=y;dirLocked=null;wrap.classList.add('dragging');track.classList.add('no-anim');}
+    function move(e){
         if(!dragging)return;
+        const x=e.touches?e.touches[0].clientX:e.clientX;
+        const y=e.touches?e.touches[0].clientY:e.clientY;
+        const dx=Math.abs(x-startX), dy=Math.abs(y-startY);
+
+        // Determina la direzione al primo movimento significativo
+        if(!dirLocked && (dx>4||dy>4)){
+            dirLocked = dx>dy ? 'h' : 'v';
+        }
+        // Se la direzione è verticale, non fare nulla (lascia scorrere la pagina)
+        if(dirLocked==='v'){dragging=false;wrap.classList.remove('dragging');track.classList.remove('no-anim');updateCarouselPos(true);return;}
+        // Direzione orizzontale: blocca lo scroll della pagina
+        if(dirLocked==='h' && e.cancelable) e.preventDefault();
+
         const now=Date.now();vel=(x-lastX)/(now-lastT||1);lastX=x;lastT=now;
         const cardW=carouselCards[0]?.offsetWidth||(window.innerWidth-60);
         const gap=18;const co=(window.innerWidth-cardW)/2-24;
@@ -539,12 +558,14 @@ function initCarouselDrag(){
         const shift=mShift||(Math.abs(delta)>threshold?(delta<0?1:-1):0);
         goToCard(startIdx+shift);
     }
-    wrap.addEventListener('touchstart',e=>begin(e.touches[0].clientX),{passive:true});
-    wrap.addEventListener('touchmove', e=>move(e.touches[0].clientX),{passive:true});
-    wrap.addEventListener('touchend',  end);
-    wrap.addEventListener('mousedown', e=>{e.preventDefault();begin(e.clientX);});
-    window.addEventListener('mousemove',e=>{if(dragging)move(e.clientX);});
-    window.addEventListener('mouseup',  end);
+    // touchstart passive:true OK (non serve preventDefault qui)
+    wrap.addEventListener('touchstart',e=>{begin(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+    // touchmove DEVE essere passive:false per poter chiamare preventDefault e bloccare lo scroll
+    wrap.addEventListener('touchmove',move,{passive:false});
+    wrap.addEventListener('touchend',end);
+    wrap.addEventListener('mousedown',e=>{e.preventDefault();begin(e.clientX,e.clientY);});
+    window.addEventListener('mousemove',move);
+    window.addEventListener('mouseup',end);
 }
 
 /* ═══════════ GOLD DUST (polvere d'oro sui secondi) ═══════════ */
@@ -642,7 +663,30 @@ async function caricaContenuti(){
         caricaRecensioni();
     }catch(e){console.error(e);}
 }
-setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.querySelector('.hi2').classList.add('show');initStats();caricaContenuti();loadHeroVideo();},3000);
+
+/* ── VISIBILITÀ SEZIONI (controllata dall'admin) ── */
+async function applicaVisibilitaSezioni(){
+    try{
+        const snap=await getDoc(doc(db,"settings","sections"));
+        if(!snap.exists())return;
+        const cfg=snap.data();
+        // cfg.recensioni, cfg.newsletter, cfg.booking — false = nascosta
+        const map={recensioni:'recensioni',newsletter:'newsletter',booking:'booking'};
+        Object.entries(map).forEach(([key,id])=>{
+            const el=document.getElementById(id);
+            if(el && cfg[key]===false) el.style.display='none';
+        });
+    }catch(e){}
+}
+
+setTimeout(()=>{
+    document.getElementById('splash').classList.add('hide');
+    document.querySelector('.hi2').classList.add('show');
+    initStats();
+    caricaContenuti();
+    applicaVisibilitaSezioni();
+    loadHeroVideo();
+},3000);
 
 /* ── REVEAL ── */
 document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.06}).observe(el));
